@@ -1,5 +1,5 @@
 import CreateIcon from "@material-ui/icons/Create";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Feed.css";
 import InputOption from "./InputOption";
 
@@ -9,18 +9,38 @@ import EventNoteIcon from "@material-ui/icons/EventNote";
 import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
 import Post from "./Post";
 
-import ThumbUpAltOutlinedIcon from "@material-ui/icons/ThumbUpAltOutlined";
-import ChatOutlinedIcon from "@material-ui/icons/ChatOutlined";
-import ShareOutlinedIcon from "@material-ui/icons/ShareOutlined";
-import SendOutlinedIcon from "@material-ui/icons/SendOutlined";
+import { db } from "./firebase";
+import firebase from "firebase/compat/app";
 
 function Feed() {
+  const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    db.collection("posts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) =>
+        setPosts(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
+  }, []);
 
   const sendPost = (e) => {
     e.preventDefault();
 
-    setPosts([...posts])
+    db.collection("posts").add({
+      name: "Mayank Ukey",
+      description: "This is A Test",
+      message: input,
+      photoUrl: "",
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    setInput("");
   };
 
   return (
@@ -30,7 +50,11 @@ function Feed() {
           <CreateIcon />
 
           <form>
-            <input type="text" />
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              type="text"
+            />
             <button onClick={sendPost} type="submit">
               Send
             </button>
@@ -48,28 +72,18 @@ function Feed() {
             color="#7fc15e"
           />
         </div>
-
-        {/* Posts */}
-        {posts.map((post) => (
-          <Post />
-        ))}
-        <Post
-          name="Mayank Ukey"
-          description="This is a test"
-          message="this message is working"
-        />
-
-        <div className="post__buttons">
-          <InputOption
-            Icon={ThumbUpAltOutlinedIcon}
-            title="Like"
-            color="gray"
-          />
-          <InputOption Icon={ChatOutlinedIcon} title="Comment" color="gray" />
-          <InputOption Icon={ShareOutlinedIcon} title="Share" color="gray" />
-          <InputOption Icon={SendOutlinedIcon} title="Send" color="gray" />
-        </div>
       </div>
+
+      {/* Posts */}
+      {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
+        <Post
+          key={id}
+          name={name}
+          description={description}
+          message={message}
+          photoUrl={photoUrl}
+        />
+      ))}
     </div>
   );
 }
