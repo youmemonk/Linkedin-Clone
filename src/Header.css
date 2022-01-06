@@ -2,8 +2,9 @@
   position: sticky;
   top: 0;
   z-index: 999;
+  background-color: white;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
   border-bottom: 0.1px solid lightgray;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -12,6 +13,7 @@
 
 .header__left {
   display: flex;
+  margin-left: 5px;
 }
 
 .header__left > img {
@@ -38,4 +40,5 @@
 
 .header__right {
   display: flex;
+  margin-right: 5px;
 }
