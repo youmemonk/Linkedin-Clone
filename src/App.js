@@ -27,6 +27,7 @@ function App() {
       {/* )} */}
 
       <div className="app__body">
+      <h1>haha</h1>
           <Sidebar />
           <Feed />
           <Widgets />
